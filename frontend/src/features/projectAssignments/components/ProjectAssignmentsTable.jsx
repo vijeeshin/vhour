@@ -146,7 +146,7 @@ const ProjectAssignmentsTable = ({
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 text-xs text-[#717171] font-medium">
             <SlidersHorizontal size={13} />
-            <span>Filters:</span>
+            <span>Filter:</span>
           </div>
 
           <select
