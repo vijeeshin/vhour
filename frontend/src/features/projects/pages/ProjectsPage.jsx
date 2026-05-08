@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import ProjectsTable from "../components/ProjectsTable";
 import { projectsRequest } from "../store/projectSlice";
 
@@ -31,6 +32,7 @@ const buildApiQuery = ({ search, sortField, sortDir, limit, page, filterActive, 
 
 const ProjectsPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { data, loading, total } = useSelector((state) => state.projects);
   const [query, setQuery] = useState(DEFAULT_QUERY);
 
@@ -42,6 +44,10 @@ const ProjectsPage = () => {
     setQuery((prev) => ({ ...prev, ...changes }));
   }, []);
 
+  const handleView = useCallback((row) => {
+    navigate(`/projects/${row.PROJECT_ID}`);
+  }, [navigate]);
+
   return (
     <div className="p-6">
       <h1 className="text-xl font-semibold text-[#484848] mb-6">Projects</h1>
@@ -51,6 +57,7 @@ const ProjectsPage = () => {
         total={total}
         query={query}
         onQueryChange={handleQueryChange}
+        onView={handleView}
       />
     </div>
   );

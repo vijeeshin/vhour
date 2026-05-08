@@ -9,17 +9,23 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { usePermission } from "@/shared/utils/permissions";
 
-const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, to: "/" },
-  { label: "Projects", icon: Clock, to: "/projects" },
-  { label: "Customers", icon: Users, to: "/customers" },
-  { label: "Assignment Types", icon: Tag, to: "/assignment-types" },
-  { label: "Project Assignments", icon: UserCheck, to: "/project-assignments" },
+const ALL_NAV_ITEMS = [
+  { label: "Dashboard", icon: LayoutDashboard, to: "/", collection: null },
+  { label: "Projects", icon: Clock, to: "/projects", collection: "PROJECT" },
+  { label: "Customers", icon: Users, to: "/customers", collection: "CUSTOMER" },
+  { label: "Assignment Types", icon: Tag, to: "/assignment-types", collection: "PROJECT_ASSIGNMENT_TYPE" },
+  { label: "Project Assignments", icon: UserCheck, to: "/project-assignments", collection: "PROJECT_ASSIGNMENT" },
 ];
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const can = usePermission();
+
+  const navItems = ALL_NAV_ITEMS.filter(
+    ({ collection }) => !collection || can(collection, "read")
+  );
 
   return (
     <aside
@@ -38,6 +44,7 @@ const Sidebar = () => {
         ) : (
           <span className="text-[#FF5A5F] text-xl font-extrabold tracking-tight">
             vHour
+            <div className="text-xs  font-normal "><i>Track Project Hours</i></div>
           </span>
         )}
       </div>

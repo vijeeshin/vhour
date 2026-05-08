@@ -1,6 +1,7 @@
 import LoginPage from "@/features/auth/pages/LoginPage";
 import ProfilePage from "@/features/profile/pages/ProfilePage";
 import ProjectsPage from "@/features/projects/pages/ProjectsPage";
+import ProjectPage from "@/features/projects/pages/ProjectPage";
 import CustomersPage from "@/features/customers/pages/CustomersPage";
 import CustomerProjectsPage from "@/features/customers/pages/CustomerProjectsPage";
 import AssignmentTypesPage from "@/features/assignmentTypes/pages/AssignmentTypesPage";
@@ -27,6 +28,7 @@ function AppRouter() {
         <Route index element={<div className="text-[#484848] font-semibold">Dashboard</div>} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="projects" element={<ProjectsPage />} />
+        <Route path="projects/:projectId" element={<ProjectPage />} />
         <Route path="customers" element={<CustomersPage />} />
         <Route path="customers/:customerId/projects" element={<CustomerProjectsPage />} />
         <Route path="assignment-types" element={<AssignmentTypesPage />} />

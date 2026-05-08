@@ -11,6 +11,7 @@ import {
   SlidersHorizontal,
   Trash2,
 } from "lucide-react";
+import { usePermission } from "@/shared/utils/permissions";
 
 const PAGE_SIZE_OPTIONS = [5, 10, 25, 50];
 
@@ -27,20 +28,22 @@ const columns = [
 const SortIcon = ({ field, sortField, sortDir }) => {
   if (sortField !== field)
     return <ChevronsUpDown size={13} className="text-[#b0b0b0]" />;
-  return sortDir === "asc"
-    ? <ChevronUp size={13} className="text-[#FF5A5F]" />
-    : <ChevronDown size={13} className="text-[#FF5A5F]" />;
+  return sortDir === "asc" ? (
+    <ChevronUp size={13} className="text-[#FF5A5F]" />
+  ) : (
+    <ChevronDown size={13} className="text-[#FF5A5F]" />
+  );
 };
 
 const Badge = ({ value, trueLabel, falseLabel }) => (
   <span
     className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide ${
-      value
-        ? "bg-[#FFF0F1] text-[#FF5A5F]"
-        : "bg-[#F7F7F7] text-[#717171]"
+      value ? "bg-[#FFF0F1] text-[#FF5A5F]" : "bg-[#F7F7F7] text-[#717171]"
     }`}
   >
-    <span className={`w-1.5 h-1.5 rounded-full ${value ? "bg-[#FF5A5F]" : "bg-[#b0b0b0]"}`} />
+    <span
+      className={`w-1.5 h-1.5 rounded-full ${value ? "bg-[#FF5A5F]" : "bg-[#b0b0b0]"}`}
+    />
     {value ? trueLabel : falseLabel}
   </span>
 );
@@ -51,14 +54,35 @@ const SkeletonRow = () => (
   <tr>
     {columns.map((col, i) => (
       <td key={col.key} className="px-5 py-4">
-        <div className="h-3.5 bg-[#F7F7F7] rounded-full animate-pulse" style={{ width: SKELETON_WIDTHS[i % SKELETON_WIDTHS.length] }} />
+        <div
+          className="h-3.5 bg-[#F7F7F7] rounded-full animate-pulse"
+          style={{ width: SKELETON_WIDTHS[i % SKELETON_WIDTHS.length] }}
+        />
       </td>
     ))}
   </tr>
 );
 
-const ProjectsTable = ({ data = [], loading = false, total = 0, query, onQueryChange, onView, onEdit, onDelete }) => {
-  const { search, sortField, sortDir, limit, page, filterActive, filterBillable } = query;
+const ProjectsTable = ({
+  data = [],
+  loading = false,
+  total = 0,
+  query,
+  onQueryChange,
+  onView,
+  onEdit,
+  onDelete,
+}) => {
+  const can = usePermission();
+  const {
+    search,
+    sortField,
+    sortDir,
+    limit,
+    page,
+    filterActive,
+    filterBillable,
+  } = query;
   const [searchInput, setSearchInput] = useState(search);
 
   useEffect(() => {
@@ -88,14 +112,18 @@ const ProjectsTable = ({ data = [], loading = false, total = 0, query, onQueryCh
       return acc;
     }, []);
 
+    console.log(can('PROJECT', 'update'));
+
   return (
     <div className="flex flex-col gap-5 font-['Circular',_'Helvetica_Neue',_Helvetica,_Arial,_sans-serif]">
-
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 min-w-[220px]">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#717171]" />
+          <Search
+            size={15}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#717171]"
+          />
           <input
             type="text"
             value={searchInput}
@@ -114,7 +142,9 @@ const ProjectsTable = ({ data = [], loading = false, total = 0, query, onQueryCh
 
           <select
             value={filterActive}
-            onChange={(e) => onQueryChange({ filterActive: e.target.value, page: 1 })}
+            onChange={(e) =>
+              onQueryChange({ filterActive: e.target.value, page: 1 })
+            }
             className="text-sm text-[#222222] bg-white border border-[#DDDDDD] rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#222222] transition-colors appearance-none cursor-pointer"
           >
             <option value="all">All statuses</option>
@@ -124,7 +154,9 @@ const ProjectsTable = ({ data = [], loading = false, total = 0, query, onQueryCh
 
           <select
             value={filterBillable}
-            onChange={(e) => onQueryChange({ filterBillable: e.target.value, page: 1 })}
+            onChange={(e) =>
+              onQueryChange({ filterBillable: e.target.value, page: 1 })
+            }
             className="text-sm text-[#222222] bg-white border border-[#DDDDDD] rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#222222] transition-colors appearance-none cursor-pointer"
           >
             <option value="all">All billing</option>
@@ -134,11 +166,15 @@ const ProjectsTable = ({ data = [], loading = false, total = 0, query, onQueryCh
 
           <select
             value={limit}
-            onChange={(e) => onQueryChange({ limit: Number(e.target.value), page: 1 })}
+            onChange={(e) =>
+              onQueryChange({ limit: Number(e.target.value), page: 1 })
+            }
             className="text-sm text-[#222222] bg-white border border-[#DDDDDD] rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#222222] transition-colors appearance-none cursor-pointer"
           >
             {PAGE_SIZE_OPTIONS.map((s) => (
-              <option key={s} value={s}>{s} per page</option>
+              <option key={s} value={s}>
+                {s} per page
+              </option>
             ))}
           </select>
         </div>
@@ -154,13 +190,19 @@ const ProjectsTable = ({ data = [], loading = false, total = 0, query, onQueryCh
                   key={col.key}
                   onClick={() => col.sortable && handleSort(col.key)}
                   className={`px-5 py-3.5 text-left text-xs font-semibold tracking-wider text-[#717171] uppercase whitespace-nowrap select-none ${
-                    col.sortable ? "cursor-pointer hover:text-[#222222] transition-colors" : ""
+                    col.sortable
+                      ? "cursor-pointer hover:text-[#222222] transition-colors"
+                      : ""
                   }`}
                 >
                   <div className="flex items-center gap-1.5">
                     {col.label}
                     {col.sortable && (
-                      <SortIcon field={col.key} sortField={sortField} sortDir={sortDir} />
+                      <SortIcon
+                        field={col.key}
+                        sortField={sortField}
+                        sortDir={sortDir}
+                      />
                     )}
                   </div>
                 </th>
@@ -177,11 +219,18 @@ const ProjectsTable = ({ data = [], loading = false, total = 0, query, onQueryCh
               ))
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 1} className="px-5 py-16 text-center">
+                <td
+                  colSpan={columns.length + 1}
+                  className="px-5 py-16 text-center"
+                >
                   <div className="flex flex-col items-center gap-2">
                     <span className="text-3xl">🔍</span>
-                    <p className="text-[#222222] font-semibold">No projects found</p>
-                    <p className="text-[#717171] text-xs">Try adjusting your search or filters</p>
+                    <p className="text-[#222222] font-semibold">
+                      No projects found
+                    </p>
+                    <p className="text-[#717171] text-xs">
+                      Try adjusting your search or filters
+                    </p>
                   </div>
                 </td>
               </tr>
@@ -202,53 +251,85 @@ const ProjectsTable = ({ data = [], loading = false, total = 0, query, onQueryCh
                     </span>
                   </td>
                   <td className="px-5 py-4 text-[#717171] text-sm">
-                    {typeof row.CUSTOMER_ID === "object"
-                      ? (row.CUSTOMER_ID?.NAME ?? "—")
-                      : row.CUSTOMER_ID
-                        ? <span className="font-mono text-xs bg-[#F7F7F7] px-2 py-1 rounded-lg" title={row.CUSTOMER_ID}>{row.CUSTOMER_ID.slice(0, 8)}…</span>
-                        : "—"}
+                    {typeof row.CUSTOMER_ID === "object" ? (
+                      (row.CUSTOMER_ID?.NAME ?? "—")
+                    ) : row.CUSTOMER_ID ? (
+                      <span
+                        className="font-mono text-xs bg-[#F7F7F7] px-2 py-1 rounded-lg"
+                        title={row.CUSTOMER_ID}
+                      >
+                        {row.CUSTOMER_ID.slice(0, 8)}…
+                      </span>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="px-5 py-4 text-[#717171] text-sm">
                     {row.PROJECT_MANAGER_ID
-                      ? `${row.PROJECT_MANAGER_ID.first_name ?? ""} ${row.PROJECT_MANAGER_ID.last_name ?? ""}`.trim() || row.PROJECT_MANAGER_ID.email || row.PROJECT_MANAGER_ID
+                      ? `${row.PROJECT_MANAGER_ID.first_name ?? ""} ${row.PROJECT_MANAGER_ID.last_name ?? ""}`.trim() ||
+                        row.PROJECT_MANAGER_ID.email ||
+                        row.PROJECT_MANAGER_ID
                       : "—"}
                   </td>
                   <td className="px-5 py-4">
-                    <Badge value={row.ACTIVE} trueLabel="Active" falseLabel="Inactive" />
+                    <Badge
+                      value={row.ACTIVE}
+                      trueLabel="Active"
+                      falseLabel="Inactive"
+                    />
                   </td>
                   <td className="px-5 py-4">
-                    <Badge value={row.BILLABLE} trueLabel="Billable" falseLabel="Non-billable" />
+                    <Badge
+                      value={row.BILLABLE}
+                      trueLabel="Billable"
+                      falseLabel="Non-billable"
+                    />
                   </td>
                   <td className="px-5 py-4 text-[#717171] text-xs">
                     {row.date_created
                       ? new Date(row.date_created).toLocaleDateString("en-US", {
-                          month: "short", day: "numeric", year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
                         })
                       : "—"}
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
-                        onClick={(e) => { e.stopPropagation(); onView?.(row); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onView?.(row);
+                        }}
                         title="View"
                         className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#F7F7F7] hover:text-[#222222] transition-colors"
                       >
                         <Eye size={15} />
                       </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onEdit?.(row); }}
-                        title="Edit"
-                        className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#F7F7F7] hover:text-[#222222] transition-colors"
-                      >
-                        <Pencil size={14} />
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onDelete?.(row); }}
-                        title="Delete"
-                        className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#FFF0F1] hover:text-[#FF5A5F] transition-colors"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      {can('PROJECT', 'update') && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit?.(row);
+                          }}
+                          title="Edit"
+                          className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#F7F7F7] hover:text-[#222222] transition-colors"
+                        >
+                          <Pencil size={14} />
+                        </button>
+                      )}
+                      {can('PROJECT', 'delete') && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete?.(row);
+                          }}
+                          title="Delete"
+                          className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#FFF0F1] hover:text-[#FF5A5F] transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -276,7 +357,10 @@ const ProjectsTable = ({ data = [], loading = false, total = 0, query, onQueryCh
 
           {pageNumbers.map((item, idx) =>
             item === "ellipsis" ? (
-              <span key={`ellipsis-${idx}`} className="w-8 h-8 flex items-center justify-center text-[#b0b0b0]">
+              <span
+                key={`ellipsis-${idx}`}
+                className="w-8 h-8 flex items-center justify-center text-[#b0b0b0]"
+              >
                 …
               </span>
             ) : (

@@ -5,6 +5,9 @@ const initialState = {
   error: null,
   data: [],
   total: 0,
+  project: null,
+  projectLoading: false,
+  projectError: null,
 };
 const projectSlice = createSlice({
   name: "projects",
@@ -22,10 +25,29 @@ const projectSlice = createSlice({
     projectsFailure(state, action) {
       state.loading = false;
       state.error = action.payload;
-    }
-   
+    },
+    projectRequest(state) {
+      state.projectLoading = true;
+      state.projectError = null;
+      state.project = null;
+    },
+    projectSuccess(state, action) {
+      state.projectLoading = false;
+      state.project = action.payload;
+    },
+    projectFailure(state, action) {
+      state.projectLoading = false;
+      state.projectError = action.payload;
+    },
   },
 });
 
-export const { projectsRequest, projectsSuccess, projectsFailure } = projectSlice.actions;
+export const {
+  projectsRequest,
+  projectsSuccess,
+  projectsFailure,
+  projectRequest,
+  projectSuccess,
+  projectFailure,
+} = projectSlice.actions;
 export default projectSlice.reducer;

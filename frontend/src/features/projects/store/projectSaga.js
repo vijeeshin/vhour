@@ -1,6 +1,6 @@
 import { all, call, put, takeLatest } from "redux-saga/effects";
-import { projectsFailure, projectsRequest, projectsSuccess } from "@/features/projects/store/projectSlice";
-import { projectsApi, projectsCountApi, customersApi } from "@/features/projects/services/projectService";
+import { projectsFailure, projectsRequest, projectsSuccess, projectRequest, projectSuccess, projectFailure } from "@/features/projects/store/projectSlice";
+import { projectsApi, projectsCountApi, customersApi, projectApi } from "@/features/projects/services/projectService";
 
 function* handleProjectsRequest(action) {
   try {
@@ -28,8 +28,18 @@ function* handleProjectsRequest(action) {
   }
 }
 
+function* handleProjectRequest(action) {
+  try {
+    const data = yield call(projectApi, action.payload);
+    yield put(projectSuccess(data));
+  } catch (err) {
+    yield put(projectFailure(err.message));
+  }
+}
+
 function* projectSaga() {
   yield takeLatest(projectsRequest.type, handleProjectsRequest);
+  yield takeLatest(projectRequest.type, handleProjectRequest);
 }
 
 export default projectSaga;

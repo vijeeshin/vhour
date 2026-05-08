@@ -1,5 +1,5 @@
 import directus from "@/shared/utils/apiInterface";
-import { aggregate, readItems } from "@directus/sdk";
+import { aggregate, readItem, readItems } from "@directus/sdk";
 
 const projectsApi = async ({
   fields,
@@ -33,6 +33,12 @@ const customersApi = async () => {
   );
 };
 
+const projectApi = async (projectId) => {
+  return await directus.request(
+    readItem("PROJECT", projectId, { fields: ["*.*"] }),
+  );
+};
+
 const projectsCountApi = async ({ filter, search } = {}) => {
   const result = await directus.request(
     aggregate("PROJECT", {
@@ -43,4 +49,4 @@ const projectsCountApi = async ({ filter, search } = {}) => {
   return Number(result?.[0]?.count?.["*"] ?? 0);
 };
 
-export { projectsApi, projectsCountApi, customersApi };
+export { projectsApi, projectsCountApi, customersApi, projectApi };
