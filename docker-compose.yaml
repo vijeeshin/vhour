@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: vhour-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vhourdb
+      POSTGRES_USER: vijeeshin
+      POSTGRES_PASSWORD: K4hvdq9tj9K4hvd
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vhour
+
+  redis:
+    image: redis:7
+    container_name: vhour-redis
+    restart: unless-stopped
+    networks:
+      - vhour
+
+  directus:
+    image: directus/directus:latest
+    container_name: vhour-directus
+    restart: unless-stopped
+    ports:
+      - "8055:8055"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      KEY: "replace-with-random-key"
+      SECRET: "replace-with-random-secret"
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "http://localhost:5173"
+
+      DB_CLIENT: "pg"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_DATABASE: "vhourdb"
+      DB_USER: "vijeeshin"
+      DB_PASSWORD: "K4hvdq9tj9K4hvd"
+
+      CACHE_ENABLED: "true"
+      CACHE_STORE: "redis"
+      REDIS: "redis:6379"
+
+      ADMIN_EMAIL: "vijeeshin@gmail.com"
+      ADMIN_PASSWORD: "K4hvdQ9tj9@"
+
+      PUBLIC_URL: "http://localhost:8055"
+
+    volumes:
+      - uploads:/directus/uploads
+      - extensions:/directus/extensions
+    networks:
+      - vhour
+
+networks:
+  vhour:
+    name: vhour
+    driver: bridge
+
+volumes:
+  postgres_data:
+  uploads:
+  extensions:

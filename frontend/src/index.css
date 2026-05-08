@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  /* Airbnb brand palette */
+  --color-rausch:      #FF5A5F;
+  --color-rausch-dark: #E0484D;
+  --color-rausch-light:#FFF0F0;
+  --color-babu:        #00A699;
+  --color-arches:      #FC642D;
+  --color-hof:         #484848;
+  --color-foggy:       #767676;
+  --color-border:      #DDDDDD;
+  --color-surface:     #F7F7F7;
+
+  /* Typography */
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Shadows (Airbnb card style) */
+  --shadow-card: 0 2px 4px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-hover: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+* {
+  font-family: var(--font-sans);
+}
+
+body {
+  background-color: #F7F7F7;
+  color: #222222;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
