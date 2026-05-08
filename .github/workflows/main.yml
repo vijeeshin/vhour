@@ -1,0 +1,12 @@
+name: Say Hi
+
+on:
+  push:
+
+jobs:
+  say-hi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Say Hi
+        run: echo "Hi from GitHub Actions!"
