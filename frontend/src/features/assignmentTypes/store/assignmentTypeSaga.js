@@ -3,10 +3,14 @@ import {
   assignmentTypesFailure,
   assignmentTypesRequest,
   assignmentTypesSuccess,
+  assignmentTypeRequest,
+  assignmentTypeSuccess,
+  assignmentTypeFailure,
 } from "@/features/assignmentTypes/store/assignmentTypeSlice";
 import {
   assignmentTypesApi,
   assignmentTypesCountApi,
+  assignmentTypeApi,
 } from "@/features/assignmentTypes/services/assignmentTypeService";
 
 function* handleAssignmentTypesRequest(action) {
@@ -22,8 +26,18 @@ function* handleAssignmentTypesRequest(action) {
   }
 }
 
+function* handleAssignmentTypeRequest(action) {
+  try {
+    const data = yield call(assignmentTypeApi, action.payload);
+    yield put(assignmentTypeSuccess(data));
+  } catch (err) {
+    yield put(assignmentTypeFailure(err.message));
+  }
+}
+
 function* assignmentTypeSaga() {
   yield takeLatest(assignmentTypesRequest.type, handleAssignmentTypesRequest);
+  yield takeLatest(assignmentTypeRequest.type, handleAssignmentTypeRequest);
 }
 
 export default assignmentTypeSaga;

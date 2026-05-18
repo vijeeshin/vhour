@@ -3,8 +3,10 @@ import ProfilePage from "@/features/profile/pages/ProfilePage";
 import ProjectsPage from "@/features/projects/pages/ProjectsPage";
 import ProjectPage from "@/features/projects/pages/ProjectPage";
 import CustomersPage from "@/features/customers/pages/CustomersPage";
+import CustomerPage from "@/features/customers/pages/CustomerPage";
 import CustomerProjectsPage from "@/features/customers/pages/CustomerProjectsPage";
 import AssignmentTypesPage from "@/features/assignmentTypes/pages/AssignmentTypesPage";
+import AssignmentTypePage from "@/features/assignmentTypes/pages/AssignmentTypePage";
 import ProjectAssignmentsPage from "@/features/projectAssignments/pages/ProjectAssignmentsPage";
 import DashboardLayout from "@/layouts/dashboard/DashboardLayout";
 import useAuth from "@/shared/hooks/useAuth";
@@ -30,8 +32,10 @@ function AppRouter() {
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="projects/:projectId" element={<ProjectPage />} />
         <Route path="customers" element={<CustomersPage />} />
+        <Route path="customers/:customerId" element={<CustomerPage />} />
         <Route path="customers/:customerId/projects" element={<CustomerProjectsPage />} />
         <Route path="assignment-types" element={<AssignmentTypesPage />} />
+        <Route path="assignment-types/:assignmentTypeId" element={<AssignmentTypePage />} />
         <Route path="project-assignments" element={<ProjectAssignmentsPage />} />
         <Route path="settings" element={<div className="text-[#484848] font-semibold">Settings</div>} />
         <Route path="time-logs" element={<div className="text-[#484848] font-semibold">Time Logs</div>} />

@@ -1,5 +1,5 @@
 import directus from "@/shared/utils/apiInterface";
-import { aggregate, readItems } from "@directus/sdk";
+import { aggregate, readItem, readItems } from "@directus/sdk";
 
 const assignmentTypesApi = async ({
   fields,
@@ -37,4 +37,10 @@ const assignmentTypesCountApi = async ({ filter, search } = {}) => {
   return Number(result?.[0]?.count?.["*"] ?? 0);
 };
 
-export { assignmentTypesApi, assignmentTypesCountApi };
+const assignmentTypeApi = async (id) => {
+  return await directus.request(
+    readItem("PROJECT_ASSIGNMENT_TYPE", id, { fields: ["*.*"] }),
+  );
+};
+
+export { assignmentTypesApi, assignmentTypesCountApi, assignmentTypeApi };

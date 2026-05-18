@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import AssignmentTypesTable from "../components/AssignmentTypesTable";
 import { assignmentTypesRequest } from "../store/assignmentTypeSlice";
 
@@ -29,6 +30,7 @@ const buildApiQuery = ({ search, sortField, sortDir, limit, page, filterActive, 
 
 const AssignmentTypesPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { data, loading, total } = useSelector((state) => state.assignmentTypes);
   const [query, setQuery] = useState(DEFAULT_QUERY);
 
@@ -40,6 +42,10 @@ const AssignmentTypesPage = () => {
     setQuery((prev) => ({ ...prev, ...changes }));
   }, []);
 
+  const handleView = useCallback((row) => {
+    navigate(`/assignment-types/${row.PROJECT_ASSIGNMENT_TYPE_ID}`);
+  }, [navigate]);
+
   return (
     <div className="p-6">
       <h1 className="text-xl font-semibold text-[#484848] mb-6">Assignment Types</h1>
@@ -49,6 +55,7 @@ const AssignmentTypesPage = () => {
         total={total}
         query={query}
         onQueryChange={handleQueryChange}
+        onView={handleView}
       />
     </div>
   );

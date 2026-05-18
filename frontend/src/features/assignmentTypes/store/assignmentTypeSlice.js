@@ -5,6 +5,9 @@ const initialState = {
   error: null,
   data: [],
   total: 0,
+  assignmentType: null,
+  assignmentTypeLoading: false,
+  assignmentTypeError: null,
 };
 
 const assignmentTypeSlice = createSlice({
@@ -24,9 +27,28 @@ const assignmentTypeSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    assignmentTypeRequest(state) {
+      state.assignmentTypeLoading = true;
+      state.assignmentTypeError = null;
+      state.assignmentType = null;
+    },
+    assignmentTypeSuccess(state, action) {
+      state.assignmentTypeLoading = false;
+      state.assignmentType = action.payload;
+    },
+    assignmentTypeFailure(state, action) {
+      state.assignmentTypeLoading = false;
+      state.assignmentTypeError = action.payload;
+    },
   },
 });
 
-export const { assignmentTypesRequest, assignmentTypesSuccess, assignmentTypesFailure } =
-  assignmentTypeSlice.actions;
+export const {
+  assignmentTypesRequest,
+  assignmentTypesSuccess,
+  assignmentTypesFailure,
+  assignmentTypeRequest,
+  assignmentTypeSuccess,
+  assignmentTypeFailure,
+} = assignmentTypeSlice.actions;
 export default assignmentTypeSlice.reducer;

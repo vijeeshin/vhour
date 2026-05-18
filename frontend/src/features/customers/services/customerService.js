@@ -1,5 +1,5 @@
 import directus from "@/shared/utils/apiInterface";
-import { aggregate, readItems } from "@directus/sdk";
+import { aggregate, readItem, readItems } from "@directus/sdk";
 
 const customersApi = async ({
   fields,
@@ -37,4 +37,10 @@ const customersCountApi = async ({ filter, search } = {}) => {
   return Number(result?.[0]?.count?.["*"] ?? 0);
 };
 
-export { customersApi, customersCountApi };
+const customerApi = async (customerId) => {
+  return await directus.request(
+    readItem("CUSTOMER", customerId, { fields: ["*.*"] }),
+  );
+};
+
+export { customersApi, customersCountApi, customerApi };

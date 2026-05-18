@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import CustomersTable from "../components/CustomersTable";
 import { customersRequest } from "../store/customerSlice";
 
@@ -29,6 +30,7 @@ const buildApiQuery = ({ search, sortField, sortDir, limit, page, filterActive, 
 
 const CustomersPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { data, loading, total } = useSelector((state) => state.customers);
   const [query, setQuery] = useState(DEFAULT_QUERY);
 
@@ -40,6 +42,10 @@ const CustomersPage = () => {
     setQuery((prev) => ({ ...prev, ...changes }));
   }, []);
 
+  const handleView = useCallback((row) => {
+    navigate(`/customers/${row.CUSTOMER_ID}`);
+  }, [navigate]);
+
   return (
     <div className="p-6">
       <h1 className="text-xl font-semibold text-[#484848] mb-6">Customers</h1>
@@ -49,6 +55,7 @@ const CustomersPage = () => {
         total={total}
         query={query}
         onQueryChange={handleQueryChange}
+        onView={handleView}
       />
     </div>
   );

@@ -1,0 +1,179 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  ChevronLeft,
+  Building2,
+  User,
+  Mail,
+  Phone,
+  Hash,
+  Layers,
+} from "lucide-react";
+import { customerRequest } from "@/features/customers/store/customerSlice";
+
+const Badge = ({ value, trueLabel, falseLabel }) => (
+  <span
+    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide ${
+      value ? "bg-[#FFF0F1] text-[#FF5A5F]" : "bg-[#F7F7F7] text-[#717171]"
+    }`}
+  >
+    <span className={`w-1.5 h-1.5 rounded-full ${value ? "bg-[#FF5A5F]" : "bg-[#b0b0b0]"}`} />
+    {value ? trueLabel : falseLabel}
+  </span>
+);
+
+const Field = ({ label, children }) => (
+  <div>
+    <p className="text-xs font-semibold text-[#b0b0b0] uppercase tracking-wider mb-1">{label}</p>
+    <div className="text-sm text-[#222222]">{children ?? <span className="text-[#b0b0b0]">—</span>}</div>
+  </div>
+);
+
+const Card = ({ title, icon: Icon, children }) => (
+  <div className="rounded-2xl border border-[#DDDDDD] shadow-sm bg-white p-5">
+    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-[#F7F7F7]">
+      <div className="w-7 h-7 flex items-center justify-center rounded-lg bg-[#FFF0F1] text-[#FF5A5F]">
+        <Icon size={14} />
+      </div>
+      <h2 className="text-sm font-semibold text-[#484848]">{title}</h2>
+    </div>
+    <div className="grid grid-cols-2 gap-x-6 gap-y-4">{children}</div>
+  </div>
+);
+
+const SkeletonCard = ({ rows = 4 }) => (
+  <div className="rounded-2xl border border-[#DDDDDD] shadow-sm bg-white p-5 animate-pulse">
+    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-[#F7F7F7]">
+      <div className="w-7 h-7 bg-[#F7F7F7] rounded-lg" />
+      <div className="h-3.5 bg-[#F7F7F7] rounded-full w-28" />
+    </div>
+    <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="space-y-1.5">
+          <div className="h-2 bg-[#F7F7F7] rounded-full w-16" />
+          <div className="h-3.5 bg-[#F7F7F7] rounded-full w-32" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const fmt = (iso) =>
+  iso
+    ? new Date(iso).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : null;
+
+const CustomerPage = () => {
+  const { customerId } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { customer: c, customerLoading, customerError } = useSelector(
+    (state) => state.customers
+  );
+
+  useEffect(() => {
+    if (customerId) dispatch(customerRequest(customerId));
+  }, [customerId, dispatch]);
+
+  const createdBy = c?.user_created;
+
+  return (
+    <div className="p-6">
+      <button
+        onClick={() => navigate("/customers")}
+        className="flex items-center gap-1.5 text-sm text-[#717171] hover:text-[#222222] transition-colors mb-5"
+      >
+        <ChevronLeft size={15} />
+        Back to Customers
+      </button>
+
+      {customerError ? (
+        <div className="rounded-2xl border border-[#DDDDDD] bg-white p-8 text-center text-sm text-[#FF5A5F]">
+          Failed to load customer: {customerError}
+        </div>
+      ) : (
+        <>
+          {/* Page header */}
+          <div className="mb-6">
+            {customerLoading ? (
+              <div className="space-y-2 animate-pulse">
+                <div className="h-6 bg-[#F7F7F7] rounded-full w-64" />
+                <div className="h-3.5 bg-[#F7F7F7] rounded-full w-36" />
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="text-xl font-semibold text-[#484848]">{c?.NAME ?? "Customer"}</h1>
+                {c?.CODE && (
+                  <span className="font-mono text-xs bg-[#F7F7F7] text-[#484848] px-2.5 py-1 rounded-lg">
+                    {c.CODE}
+                  </span>
+                )}
+                <Badge value={c?.ACTIVE} trueLabel="Active" falseLabel="Inactive" />
+              </div>
+            )}
+          </div>
+
+          {/* Two-column grid */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+            {/* Left column */}
+            <div className="flex flex-col gap-5">
+              {customerLoading ? (
+                <SkeletonCard rows={6} />
+              ) : (
+                <Card title="Customer Details" icon={Layers}>
+                  <Field label="Customer Name">{c?.NAME}</Field>
+                  <Field label="Code">{c?.CODE}</Field>
+                  <Field label="Status">
+                    <Badge value={c?.ACTIVE} trueLabel="Active" falseLabel="Inactive" />
+                  </Field>
+                  {c?.EMAIL && (
+                    <Field label="Email">
+                      <a href={`mailto:${c.EMAIL}`} className="text-[#FF5A5F] hover:underline">
+                        {c.EMAIL}
+                      </a>
+                    </Field>
+                  )}
+                  {c?.PHONE && <Field label="Phone">{c.PHONE}</Field>}
+                  {c?.DESCRIPTION && (
+                    <div className="col-span-2">
+                      <Field label="Description">
+                        <p className="text-[#717171] leading-relaxed">{c.DESCRIPTION}</p>
+                      </Field>
+                    </div>
+                  )}
+                  <Field label="Created">{fmt(c?.date_created)}</Field>
+                  <Field label="Last Updated">{fmt(c?.date_updated)}</Field>
+                </Card>
+              )}
+            </div>
+
+            {/* Right column */}
+            <div className="flex flex-col gap-5">
+              {/* Created By */}
+              {customerLoading ? (
+                <SkeletonCard rows={2} />
+              ) : createdBy ? (
+                <Card title="Created By" icon={User}>
+                  <Field label="Name">
+                    {`${createdBy.first_name ?? ""} ${createdBy.last_name ?? ""}`.trim() || "—"}
+                  </Field>
+                  <Field label="Email">{createdBy.email}</Field>
+                  {createdBy.DEPARTMENT && (
+                    <Field label="Department">{createdBy.DEPARTMENT}</Field>
+                  )}
+                </Card>
+              ) : null}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default CustomerPage;

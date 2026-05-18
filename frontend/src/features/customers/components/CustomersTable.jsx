@@ -12,6 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { usePermission } from "@/shared/utils/permissions";
 
 const PAGE_SIZE_OPTIONS = [5, 10, 25, 50];
 
@@ -27,9 +28,11 @@ const columns = [
 const SortIcon = ({ field, sortField, sortDir }) => {
   if (sortField !== field)
     return <ChevronsUpDown size={13} className="text-[#b0b0b0]" />;
-  return sortDir === "asc"
-    ? <ChevronUp size={13} className="text-[#FF5A5F]" />
-    : <ChevronDown size={13} className="text-[#FF5A5F]" />;
+  return sortDir === "asc" ? (
+    <ChevronUp size={13} className="text-[#FF5A5F]" />
+  ) : (
+    <ChevronDown size={13} className="text-[#FF5A5F]" />
+  );
 };
 
 const Badge = ({ value, trueLabel, falseLabel }) => (
@@ -38,7 +41,9 @@ const Badge = ({ value, trueLabel, falseLabel }) => (
       value ? "bg-[#FFF0F1] text-[#FF5A5F]" : "bg-[#F7F7F7] text-[#717171]"
     }`}
   >
-    <span className={`w-1.5 h-1.5 rounded-full ${value ? "bg-[#FF5A5F]" : "bg-[#b0b0b0]"}`} />
+    <span
+      className={`w-1.5 h-1.5 rounded-full ${value ? "bg-[#FF5A5F]" : "bg-[#b0b0b0]"}`}
+    />
     {value ? trueLabel : falseLabel}
   </span>
 );
@@ -74,6 +79,7 @@ const CustomersTable = ({
   const { search, sortField, sortDir, limit, page, filterActive } = query;
   const [searchInput, setSearchInput] = useState(search);
   const navigate = useNavigate();
+  const can = usePermission();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -107,7 +113,10 @@ const CustomersTable = ({
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[220px]">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#717171]" />
+          <Search
+            size={15}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#717171]"
+          />
           <input
             type="text"
             value={searchInput}
@@ -125,7 +134,9 @@ const CustomersTable = ({
 
           <select
             value={filterActive}
-            onChange={(e) => onQueryChange({ filterActive: e.target.value, page: 1 })}
+            onChange={(e) =>
+              onQueryChange({ filterActive: e.target.value, page: 1 })
+            }
             className="text-sm text-[#222222] bg-white border border-[#DDDDDD] rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#222222] transition-colors appearance-none cursor-pointer"
           >
             <option value="all">All statuses</option>
@@ -135,11 +146,15 @@ const CustomersTable = ({
 
           <select
             value={limit}
-            onChange={(e) => onQueryChange({ limit: Number(e.target.value), page: 1 })}
+            onChange={(e) =>
+              onQueryChange({ limit: Number(e.target.value), page: 1 })
+            }
             className="text-sm text-[#222222] bg-white border border-[#DDDDDD] rounded-xl px-3 py-2.5 focus:outline-none focus:border-[#222222] transition-colors appearance-none cursor-pointer"
           >
             {PAGE_SIZE_OPTIONS.map((s) => (
-              <option key={s} value={s}>{s} per page</option>
+              <option key={s} value={s}>
+                {s} per page
+              </option>
             ))}
           </select>
         </div>
@@ -155,13 +170,19 @@ const CustomersTable = ({
                   key={col.key}
                   onClick={() => col.sortable && handleSort(col.key)}
                   className={`px-5 py-3.5 text-left text-xs font-semibold tracking-wider text-[#717171] uppercase whitespace-nowrap select-none ${
-                    col.sortable ? "cursor-pointer hover:text-[#222222] transition-colors" : ""
+                    col.sortable
+                      ? "cursor-pointer hover:text-[#222222] transition-colors"
+                      : ""
                   }`}
                 >
                   <div className="flex items-center gap-1.5">
                     {col.label}
                     {col.sortable && (
-                      <SortIcon field={col.key} sortField={sortField} sortDir={sortDir} />
+                      <SortIcon
+                        field={col.key}
+                        sortField={sortField}
+                        sortDir={sortDir}
+                      />
                     )}
                   </div>
                 </th>
@@ -178,11 +199,18 @@ const CustomersTable = ({
               ))
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 1} className="px-5 py-16 text-center">
+                <td
+                  colSpan={columns.length + 1}
+                  className="px-5 py-16 text-center"
+                >
                   <div className="flex flex-col items-center gap-2">
                     <span className="text-3xl">🔍</span>
-                    <p className="text-[#222222] font-semibold">No customers found</p>
-                    <p className="text-[#717171] text-xs">Try adjusting your search or filters</p>
+                    <p className="text-[#222222] font-semibold">
+                      No customers found
+                    </p>
+                    <p className="text-[#717171] text-xs">
+                      Try adjusting your search or filters
+                    </p>
                   </div>
                 </td>
               </tr>
@@ -191,7 +219,6 @@ const CustomersTable = ({
                 <tr
                   key={row.CUSTOMER_ID}
                   className="group hover:bg-[#FAFAFA] transition-colors cursor-pointer"
-                 
                 >
                   <td className="px-5 py-4">
                     <span className="font-semibold text-[#222222] group-hover:text-[#FF5A5F] transition-colors">
@@ -203,10 +230,18 @@ const CustomersTable = ({
                       {row.CODE ?? "—"}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-[#717171] text-sm">{row.EMAIL ?? "—"}</td>
-                  <td className="px-5 py-4 text-[#717171] text-sm">{row.PHONE ?? "—"}</td>
+                  <td className="px-5 py-4 text-[#717171] text-sm">
+                    {row.EMAIL ?? "—"}
+                  </td>
+                  <td className="px-5 py-4 text-[#717171] text-sm">
+                    {row.PHONE ?? "—"}
+                  </td>
                   <td className="px-5 py-4">
-                    <Badge value={row.ACTIVE} trueLabel="Active" falseLabel="Inactive" />
+                    <Badge
+                      value={row.ACTIVE}
+                      trueLabel="Active"
+                      falseLabel="Inactive"
+                    />
                   </td>
                   <td className="px-5 py-4 text-[#717171] text-xs">
                     {row.date_created
@@ -219,27 +254,42 @@ const CustomersTable = ({
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onView?.(row); }}
-                        title="View"
-                        className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#F7F7F7] hover:text-[#222222] transition-colors"
-                      >
-                        <Eye size={15} />
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onEdit?.(row); }}
-                        title="Edit"
-                        className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#F7F7F7] hover:text-[#222222] transition-colors"
-                      >
-                        <Pencil size={14} />
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onDelete?.(row); }}
-                        title="Delete"
-                        className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#FFF0F1] hover:text-[#FF5A5F] transition-colors"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      {can("CUSTOMER", "read") && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onView?.(row);
+                          }}
+                          title="View"
+                          className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#F7F7F7] hover:text-[#222222] transition-colors"
+                        >
+                          <Eye size={15} />
+                        </button>
+                      )}
+                      {can("CUSTOMER", "update") && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit?.(row);
+                          }}
+                          title="Edit"
+                          className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#F7F7F7] hover:text-[#222222] transition-colors"
+                        >
+                          <Pencil size={14} />
+                        </button>
+                      )}
+                      {can("CUSTOMER", "delete") && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete?.(row);
+                          }}
+                          title="Delete"
+                          className="w-8 h-8 flex items-center justify-center rounded-xl text-[#717171] hover:bg-[#FFF0F1] hover:text-[#FF5A5F] transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -267,7 +317,10 @@ const CustomersTable = ({
 
           {pageNumbers.map((item, idx) =>
             item === "ellipsis" ? (
-              <span key={`ellipsis-${idx}`} className="w-8 h-8 flex items-center justify-center text-[#b0b0b0]">
+              <span
+                key={`ellipsis-${idx}`}
+                className="w-8 h-8 flex items-center justify-center text-[#b0b0b0]"
+              >
                 …
               </span>
             ) : (

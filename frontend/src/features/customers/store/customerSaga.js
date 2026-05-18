@@ -1,6 +1,6 @@
 import { all, call, put, takeLatest } from "redux-saga/effects";
-import { customersFailure, customersRequest, customersSuccess } from "@/features/customers/store/customerSlice";
-import { customersApi, customersCountApi } from "@/features/customers/services/customerService";
+import { customersFailure, customersRequest, customersSuccess, customerRequest, customerSuccess, customerFailure } from "@/features/customers/store/customerSlice";
+import { customersApi, customersCountApi, customerApi } from "@/features/customers/services/customerService";
 
 function* handleCustomersRequest(action) {
   try {
@@ -15,8 +15,18 @@ function* handleCustomersRequest(action) {
   }
 }
 
+function* handleCustomerRequest(action) {
+  try {
+    const data = yield call(customerApi, action.payload);
+    yield put(customerSuccess(data));
+  } catch (err) {
+    yield put(customerFailure(err.message));
+  }
+}
+
 function* customerSaga() {
   yield takeLatest(customersRequest.type, handleCustomersRequest);
+  yield takeLatest(customerRequest.type, handleCustomerRequest);
 }
 
 export default customerSaga;
